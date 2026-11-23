@@ -111,6 +111,22 @@ return {
           html = {},
           jsonls = {},
           jsonnet_ls = {},
+          mise = {
+            mason = false,
+            cmd = { 'mise', 'lsp' },
+            filetypes = { 'toml' },
+            root_markers = {
+              {
+                'mise.toml',
+                '.mise.toml',
+                'mise.local.toml',
+                '.mise.local.toml',
+                'mise/config.toml',
+                '.mise/config.toml',
+                '.config/mise/config.toml',
+              },
+            },
+          },
           pyright = {},
           rust_analyzer = {},
           sourcekit = {
