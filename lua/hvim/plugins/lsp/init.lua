@@ -106,6 +106,7 @@ return {
           },
 
           astro = {},
+          bashls = {},
           cssls = {},
           dockerls = {},
           html = {},
@@ -291,13 +292,32 @@ return {
 
   {
     "jmbuhr/otter.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    dependencies = { "romus204/tree-sitter-manager.nvim" },
+    init = function()
+      vim.treesitter.query.add_predicate('is-mise?', function(_, _, source)
+        if type(source) ~= 'number' then
+          return false
+        end
+
+        local path = vim.api.nvim_buf_get_name(source)
+        local name = vim.fs.basename(path)
+        if name == 'mise.toml' or name == '.mise.toml' or name:match('^%.?mise%..+%.toml$') then
+          return true
+        end
+
+        local parent = vim.fs.basename(vim.fs.dirname(path))
+        return (parent == 'mise' or parent == '.mise')
+          and (name == 'config.toml' or name:match('^config%..+%.toml$') ~= nil)
+      end)
+    end,
     config = function()
       vim.api.nvim_create_autocmd({ "FileType" }, {
         pattern = { "toml" },
         group = vim.api.nvim_create_augroup("EmbedToml", {}),
         callback = function()
-          require("otter").activate()
+          if vim.treesitter.language.add('toml') then
+            require("otter").activate()
+          end
         end,
       })
     end,
