@@ -1,3 +1,8 @@
+local opencode_terminal = {
+  count = 1,
+  win = { position = 'right', enter = false },
+}
+
 return {
   {
     'nickvandyke/opencode.nvim',
@@ -9,23 +14,30 @@ return {
       {
         '<leader>ac',
         function()
-          require('opencode').toggle()
+          require('snacks.terminal').toggle('opencode', opencode_terminal)
         end,
-        desc = "OpenCode" },
+        desc = 'Toggle OpenCode',
+      },
       {
         '<leader>aa',
         function()
-          require('opencode').ask("@this: ", { submit = true })
+          require('opencode').prompt('@this: ')
         end,
         mode = { "n", "x", "v" },
-        desc = "Ask OpenCode",
+        desc = 'Send context to OpenCode',
       },
     },
     config = function()
       --@type opencode.Opts
-      vim.g.opencode_opts = {}
+      vim.g.opencode_opts = {
+        server = {
+          start = function()
+            require('snacks.terminal').get('opencode', opencode_terminal):show()
+          end,
+        },
+      }
 
-      -- Required for `opts.autoreload`
+      -- Required for `opts.events.reload`
       vim.o.autoread = true
     end,
   },
